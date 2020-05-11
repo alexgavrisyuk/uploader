@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Queries" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="12.1.2" />
+      <PackageReference Include="FluentValidation.AspNetCore" Version="8.6.2" />
+      <PackageReference Include="MediatR" Version="8.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Uploader.Infrastructure\Uploader.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
