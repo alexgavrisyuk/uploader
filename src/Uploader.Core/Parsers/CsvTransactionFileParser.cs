@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection.Metadata;
 using CsvHelper;
 using Microsoft.AspNetCore.Http;
 using Uploader.Core.CsvMappers;
+using Uploader.Core.CsvModels;
+using Uploader.Core.Helpers;
 using Uploader.Core.Interfaces;
 using Uploader.Domain.Entities;
 
@@ -20,14 +25,26 @@ namespace Uploader.Core.Parsers
             {
                 using (var csv = new CsvReader(reader))
                 {
+                    csv.Configuration.HasHeaderRecord = false;
+
                     RegisterClassMaps(csv);
+                    
                     try
                     {
-                        csv.Read();
                         while (csv.Read())
                         {
-                            var record = csv.GetRecord<Transaction>();
-                            transactions.Add(record);
+                            var record = csv.GetRecord<CsvTransaction>();
+                            
+                            var newTransaction = new Transaction()
+                            {
+                                Id = record.Id,
+                                Amount = Decimal.Parse(record.Amount),
+                                CurrencyCode = record.CurrencyCode,
+                                TransactionDate = DateTime.ParseExact(record.TransactionDate, Constants.CsvDateTimeFormat, CultureInfo.InvariantCulture),
+                                Status = record.Status
+                            };
+                            
+                            transactions.Add(newTransaction);
                         }
                     }
                     catch (Exception ex)

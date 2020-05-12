@@ -32,7 +32,8 @@ namespace Uploader.Api
                 {
                     options.RegisterValidatorsFromAssemblyContaining<UploadFileCommandValidator>();
                 });
-
+            
+            services.AddServices();
             services.AddMediatr();
             services.AddDb();
             
