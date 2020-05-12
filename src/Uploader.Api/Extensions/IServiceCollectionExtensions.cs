@@ -1,15 +1,38 @@
-﻿using MediatR;
+﻿using System.Linq;
+using Mapster;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Uploader.Core.Commands;
 using Uploader.Core.Factories;
+using Uploader.Core.Helpers;
+using Uploader.Core.ResponseModels;
+using Uploader.Domain.Entities;
 using Uploader.Infrastructure;
 
 namespace Uploader.Api.Extensions
 {
     public static class IServiceCollectionExtensions
     {
+        public static void AddSwagger(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Uploader API", Version = "v1" });
+            });
+        }
+        
+        public static void ConfigureMapster(this IServiceCollection service)
+        {
+            TypeAdapterConfig<Transaction, TransactionResponseModel>
+                .NewConfig()
+                .Map(dest => dest.Payment, src => $"{src.Amount} {src.CurrencyCode}")
+                .Map(dest => dest.Status, src => 
+                    Constants.StatusMap.First(s => s.Key.Contains(src.Status)).Value);
+        }
+
         public static void AddServices(this IServiceCollection services)
         {
             services.AddScoped<TransactionFileParserFactory>();

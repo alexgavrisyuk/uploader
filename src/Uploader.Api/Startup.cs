@@ -1,4 +1,7 @@
+using System.Diagnostics.Contracts;
+using System.Linq;
 using FluentValidation.AspNetCore;
+using Mapster;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -7,7 +10,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Uploader.Api.Extensions;
 using Uploader.Api.Filters;
+using Uploader.Core.Helpers;
+using Uploader.Core.ResponseModels;
 using Uploader.Core.Validators;
+using Uploader.Domain.Entities;
 
 namespace Uploader.Api
 {
@@ -33,6 +39,8 @@ namespace Uploader.Api
                     options.RegisterValidatorsFromAssemblyContaining<UploadFileCommandValidator>();
                 });
             
+            services.ConfigureMapster();
+            services.AddSwagger();
             services.AddServices();
             services.AddMediatr();
             services.AddDb();
@@ -64,13 +72,20 @@ namespace Uploader.Api
 
             app.UseRouting();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Server  API");
+                c.RoutePrefix = "swagger";
+            });
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
             });
-
+            
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
@@ -80,6 +95,8 @@ namespace Uploader.Api
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+            
+           
         }
     }
 }
